@@ -54,6 +54,9 @@ class StorageWrapper:
     def delete(self, product_id):
         return self.client.delete(self._format_key(product_id))
 
+    def exists(self, product_id):
+        return self.client.exists(self._format_key(product_id))
+
     def decrement_stock(self, product_id, amount):
         return self.client.hincrby(self._format_key(product_id), "in_stock", -amount)
 
