@@ -1,23 +1,23 @@
 import datetime
 
 from sqlalchemy import (
-    DECIMAL, Column, DateTime, ForeignKey, Integer,
+    DECIMAL,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 
 class Base(object):
-    created_at = Column(
-        DateTime,
-        default=datetime.datetime.utcnow,
-        nullable=False
-    )
+    created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at = Column(
         DateTime,
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.utcnow,
-        nullable=False
+        nullable=False,
     )
 
 
@@ -35,9 +35,7 @@ class OrderDetail(DeclarativeBase):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     order_id = Column(
-        Integer,
-        ForeignKey("orders.id", name="fk_order_details_orders"),
-        nullable=False
+        Integer, ForeignKey("orders.id", name="fk_order_details_orders"), nullable=False
     )
     order = relationship(Order, backref="order_details")
     product_id = Column(Integer, nullable=False)

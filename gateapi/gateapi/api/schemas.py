@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 
+
 class Product(BaseModel):
     id: str
     title: str
@@ -14,11 +15,14 @@ class CreateOrderDetail(BaseModel):
     price: float
     quantity: int
 
+
 class CreateOrder(BaseModel):
     order_details: List[CreateOrderDetail]
 
+
 class CreateOrderSuccess(BaseModel):
     id: int
+
 
 class CreateProductSuccess(BaseModel):
     id: str
