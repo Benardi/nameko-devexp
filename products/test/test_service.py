@@ -114,6 +114,17 @@ def test_create_product_validation_error_on_non_nullable_fields(
     assert {field: ["Field may not be null."]} == exc_info.value.args[0]
 
 
+def test_delete_product(create_product, service_container):
+    stored_product = create_product()
+
+    with entrypoint_hook(service_container, "delete") as delete:
+        delete(stored_product["id"])
+
+    with pytest.raises(NotFound):
+        with entrypoint_hook(service_container, "get") as get:
+            get(stored_product["id"])
+
+
 def test_handle_order_created(test_config, products, redis_client, service_container):
     dispatch = event_dispatcher()
 
