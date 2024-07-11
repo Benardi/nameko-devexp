@@ -125,6 +125,18 @@ scenarios:
         subject: http-code
         not: false
 
+    # 6. List Orders
+    - url: /orders
+      label: order-list
+      think-time: uniform(0s, 0s)
+      method: GET
+
+      assert:
+      - contains:
+        - 200
+        subject: http-code
+        not: false
+
 reporting:
 - module: final-stats
   dump-xml: stats.xml

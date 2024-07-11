@@ -29,3 +29,17 @@ def test_can_create_order_detail(db_session):
     assert order_detail_2.product_id == "the_odyssey"
     assert order_detail_2.price == 99.50
     assert order_detail_2.quantity == 2
+
+
+def test_can_list_orders(db_session):
+    order1 = Order()
+    order2 = Order()
+
+    db_session.add(order1)
+    db_session.add(order2)
+    db_session.commit()
+
+    expected = set([order1, order2])
+    actual = set(db_session.query(Order).all())
+
+    assert actual == expected
