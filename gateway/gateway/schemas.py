@@ -8,9 +8,7 @@ class CreateOrderDetailSchema(Schema):
 
 
 class CreateOrderSchema(Schema):
-    order_details = fields.Nested(
-        CreateOrderDetailSchema, many=True, required=True
-    )
+    order_details = fields.Nested(CreateOrderDetailSchema, many=True, required=True)
 
 
 class ProductSchema(Schema):
@@ -22,7 +20,6 @@ class ProductSchema(Schema):
 
 
 class GetOrderSchema(Schema):
-
     class OrderDetail(Schema):
         id = fields.Int()
         quantity = fields.Int()

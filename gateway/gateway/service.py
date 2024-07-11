@@ -16,28 +16,20 @@ class GatewayService(object):
     Service acts as a gateway to other services over http.
     """
 
-    name = 'gateway'
+    name = "gateway"
 
-    orders_rpc = RpcProxy('orders')
-    products_rpc = RpcProxy('products')
+    orders_rpc = RpcProxy("orders")
+    products_rpc = RpcProxy("products")
 
-    @http(
-        "GET", "/products/<string:product_id>",
-        expected_exceptions=ProductNotFound
-    )
+    @http("GET", "/products/<string:product_id>", expected_exceptions=ProductNotFound)
     def get_product(self, request, product_id):
-        """Gets product by `product_id`
-        """
+        """Gets product by `product_id`"""
         product = self.products_rpc.get(product_id)
         return Response(
-            ProductSchema().dumps(product).data,
-            mimetype='application/json'
+            ProductSchema().dumps(product).data, mimetype="application/json"
         )
 
-    @http(
-        "POST", "/products",
-        expected_exceptions=(ValidationError, BadRequest)
-    )
+    @http("POST", "/products", expected_exceptions=(ValidationError, BadRequest))
     def create_product(self, request):
         """Create a new product - product data is posted as json
 
@@ -71,7 +63,7 @@ class GatewayService(object):
         # Create the product
         self.products_rpc.create(product_data)
         return Response(
-            json.dumps({'id': product_data['id']}), mimetype='application/json'
+            json.dumps({"id": product_data["id"]}), mimetype="application/json"
         )
 
     @http("GET", "/orders/<int:order_id>", expected_exceptions=OrderNotFound)
@@ -82,10 +74,7 @@ class GatewayService(object):
         products-service.
         """
         order = self._get_order(order_id)
-        return Response(
-            GetOrderSchema().dumps(order).data,
-            mimetype='application/json'
-        )
+        return Response(GetOrderSchema().dumps(order).data, mimetype="application/json")
 
     def _get_order(self, order_id):
         # Retrieve order data from the orders service.
@@ -94,24 +83,25 @@ class GatewayService(object):
         order = self.orders_rpc.get_order(order_id)
 
         # Retrieve all products from the products service
-        product_map = {prod['id']: prod for prod in self.products_rpc.list()}
+        product_map = {prod["id"]: prod for prod in self.products_rpc.list()}
 
         # get the configured image root
-        image_root = config['PRODUCT_IMAGE_ROOT']
+        image_root = config["PRODUCT_IMAGE_ROOT"]
 
         # Enhance order details with product and image details.
-        for item in order['order_details']:
-            product_id = item['product_id']
+        for item in order["order_details"]:
+            product_id = item["product_id"]
 
-            item['product'] = product_map[product_id]
+            item["product"] = product_map[product_id]
             # Construct an image url.
-            item['image'] = '{}/{}.jpg'.format(image_root, product_id)
+            item["image"] = "{}/{}.jpg".format(image_root, product_id)
 
         return order
 
     @http(
-        "POST", "/orders",
-        expected_exceptions=(ValidationError, ProductNotFound, BadRequest)
+        "POST",
+        "/orders",
+        expected_exceptions=(ValidationError, ProductNotFound, BadRequest),
     )
     def create_order(self, request):
         """Create a new order - order data is posted as json
@@ -153,22 +143,18 @@ class GatewayService(object):
         # Create the order
         # Note - this may raise `ProductNotFound`
         id_ = self._create_order(order_data)
-        return Response(json.dumps({'id': id_}), mimetype='application/json')
+        return Response(json.dumps({"id": id_}), mimetype="application/json")
 
     def _create_order(self, order_data):
         # check order product ids are valid
-        valid_product_ids = {prod['id'] for prod in self.products_rpc.list()}
-        for item in order_data['order_details']:
-            if item['product_id'] not in valid_product_ids:
-                raise ProductNotFound(
-                    "Product Id {}".format(item['product_id'])
-                )
+        valid_product_ids = {prod["id"] for prod in self.products_rpc.list()}
+        for item in order_data["order_details"]:
+            if item["product_id"] not in valid_product_ids:
+                raise ProductNotFound("Product Id {}".format(item["product_id"]))
 
         # Call orders-service to create the order.
         # Dump the data through the schema to ensure the values are serialized
         # correctly.
         serialized_data = CreateOrderSchema().dump(order_data).data
-        result = self.orders_rpc.create_order(
-            serialized_data['order_details']
-        )
-        return result['id']
+        result = self.orders_rpc.create_order(serialized_data["order_details"])
+        return result["id"]

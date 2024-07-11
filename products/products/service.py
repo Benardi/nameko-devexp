@@ -10,8 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class ProductsService:
-
-    name = 'products'
+    name = "products"
 
     storage = dependencies.Storage()
 
@@ -30,8 +29,7 @@ class ProductsService:
         product = schemas.Product(strict=True).load(product).data
         self.storage.create(product)
 
-    @event_handler('orders', 'order_created')
+    @event_handler("orders", "order_created")
     def handle_order_created(self, payload):
-        for product in payload['order']['order_details']:
-            self.storage.decrement_stock(
-                product['product_id'], product['quantity'])
+        for product in payload["order"]["order_details"]:
+            self.storage.decrement_stock(product["product_id"], product["quantity"])

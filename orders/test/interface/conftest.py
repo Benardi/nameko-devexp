@@ -30,19 +30,20 @@ from orders.service import OrdersService
 
 @pytest.fixture
 def test_config(rabbit_config, db_url):
-    with config.patch({'DB_URIS': {'orders:Base': db_url}}):
+    with config.patch({"DB_URIS": {"orders:Base": db_url}}):
         yield
 
 
 @pytest.fixture
 def create_service_meta(container_factory, test_config):
-    """ Returns a convenience method for creating service test instance
+    """Returns a convenience method for creating service test instance
 
     `container_factory` is a Nameko's test fixture
     for creating service container
     """
+
     def create(*dependencies, **dependency_map):
-        """ Create service instance with specified dependencies mocked
+        """Create service instance with specified dependencies mocked
 
         Dependencies named in *dependencies will be replaced with a
         `MockDependencyProvider`, which injects a `MagicMock` instead of the
@@ -57,16 +58,14 @@ def create_service_meta(container_factory, test_config):
         """
         dependency_names = list(dependencies) + list(dependency_map.keys())
 
-        ServiceMeta = namedtuple(
-            'ServiceMeta', ['container'] + dependency_names
-        )
+        ServiceMeta = namedtuple("ServiceMeta", ["container"] + dependency_names)
         container = container_factory(OrdersService)
 
         mocked_dependencies = replace_dependencies(
             container, *dependencies, **dependency_map
         )
         if len(dependency_names) == 1:
-            mocked_dependencies = (mocked_dependencies, )
+            mocked_dependencies = (mocked_dependencies,)
 
         container.start()
 
@@ -77,13 +76,13 @@ def create_service_meta(container_factory, test_config):
 
 @pytest.fixture
 def orders_service(create_service_meta):
-    """ Orders service test instance with `event_dispatcher`
-    dependency mocked """
-    return create_service_meta('event_dispatcher')
+    """Orders service test instance with `event_dispatcher`
+    dependency mocked"""
+    return create_service_meta("event_dispatcher")
 
 
 @pytest.fixture
 def orders_rpc(orders_service):
-    """ Fixture used for triggering real RPC entrypoints on Orders service """
-    with ServiceRpcProxy('orders') as proxy:
+    """Fixture used for triggering real RPC entrypoints on Orders service"""
+    with ServiceRpcProxy("orders") as proxy:
         yield proxy

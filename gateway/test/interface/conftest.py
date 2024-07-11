@@ -29,21 +29,20 @@ from gateway.service import GatewayService
 
 @pytest.yield_fixture
 def test_config(web_config, rabbit_config):
-    with config.patch(
-        {'PRODUCT_IMAGE_ROOT': 'http://example.com/airship/images'}
-    ):
+    with config.patch({"PRODUCT_IMAGE_ROOT": "http://example.com/airship/images"}):
         yield
 
 
 @pytest.fixture
 def create_service_meta(container_factory, test_config):
-    """ Returns a convenience method for creating service test instance
+    """Returns a convenience method for creating service test instance
 
     `container_factory` is a Nameko's test fixture
     for creating service container
     """
+
     def create(*dependencies, **dependency_map):
-        """ Create service instance with specified dependencies mocked
+        """Create service instance with specified dependencies mocked
 
         Dependencies named in *dependencies will be replaced with a
         `MockDependencyProvider`, which injects a `MagicMock` instead of the
@@ -58,16 +57,14 @@ def create_service_meta(container_factory, test_config):
         """
         dependency_names = list(dependencies) + list(dependency_map.keys())
 
-        ServiceMeta = namedtuple(
-            'ServiceMeta', ['container'] + dependency_names
-        )
+        ServiceMeta = namedtuple("ServiceMeta", ["container"] + dependency_names)
         container = container_factory(GatewayService)
 
         mocked_dependencies = replace_dependencies(
             container, *dependencies, **dependency_map
         )
         if len(dependency_names) == 1:
-            mocked_dependencies = (mocked_dependencies, )
+            mocked_dependencies = (mocked_dependencies,)
 
         container.start()
 
@@ -78,6 +75,6 @@ def create_service_meta(container_factory, test_config):
 
 @pytest.fixture
 def gateway_service(create_service_meta):
-    """ Gateway service test instance with mocked `products_rpc` and
-    `orders_rpc` dependencies """
-    return create_service_meta('products_rpc', 'orders_rpc')
+    """Gateway service test instance with mocked `products_rpc` and
+    `orders_rpc` dependencies"""
+    return create_service_meta("products_rpc", "orders_rpc")
