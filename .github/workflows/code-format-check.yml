@@ -1,0 +1,25 @@
+name: Check code formatting using black
+
+on:
+  pull_request:
+    branches: [ "main" ] 
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.7'
+    - name: Lint with black
+      run: |
+        pip3 install black==23.3.0
+        # stop the build if there are formatting violations
+        black --check .
