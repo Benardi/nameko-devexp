@@ -63,3 +63,9 @@ echo
 ## (Test: Deleting a Product) Get Product should now fail
 echo "=== Getting product id: the_odyssey (Should fail) ==="
 curl -s "${STD_APP_URL}/products/the_odyssey" | jq .
+echo
+
+# Test: Get List of orders
+echo "=== Getting list of Orders ==="
+curl -s "${STD_APP_URL}/orders" | jq .
+echo

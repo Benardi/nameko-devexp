@@ -164,3 +164,15 @@ class GatewayService(object):
         serialized_data = CreateOrderSchema().dump(order_data).data
         result = self.orders_rpc.create_order(serialized_data["order_details"])
         return result["id"]
+
+    @http("GET", "/orders")
+    def list_orders(self, request):
+        """Gets a list of all existing orders with their order details
+
+        Does not enhance the order details with full product details.
+        """
+        orders = self.orders_rpc.list_orders()
+
+        return Response(
+            GetOrderSchema(many=True).dumps(orders).data, mimetype="application/json"
+        )
