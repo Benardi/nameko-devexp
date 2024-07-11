@@ -125,6 +125,22 @@ def test_delete_product(create_product, service_container):
             get(stored_product["id"])
 
 
+def test_check_if_product_exists(create_product, service_container):
+    stored_product = create_product()
+
+    with entrypoint_hook(service_container, "exists") as exists:
+        result = exists(stored_product["id"])
+
+    assert result
+
+
+def test_check_if_missing_product_exists(service_container):
+    with entrypoint_hook(service_container, "exists") as exists:
+        result = exists("unknown")
+
+    assert not result
+
+
 def test_handle_order_created(test_config, products, redis_client, service_container):
     dispatch = event_dispatcher()
 

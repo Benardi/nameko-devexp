@@ -55,7 +55,11 @@ class StorageWrapper:
         return self.client.delete(self._format_key(product_id))
 
     def exists(self, product_id):
-        return self.client.exists(self._format_key(product_id))
+        """Returns whether the product_id is tied to an existing product.
+
+        This method assumes it's receiving a single product_id as its paramater.
+        """
+        return self.client.exists(self._format_key(product_id)) == 1
 
     def decrement_stock(self, product_id, amount):
         return self.client.hincrby(self._format_key(product_id), "in_stock", -amount)

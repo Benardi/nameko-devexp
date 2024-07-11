@@ -55,6 +55,15 @@ def test_delete_missing_product(storage, products):
     assert result == 0
 
 
+def test_exists_on_existing_product(product, storage):
+    storage.create(product)
+    assert storage.exists("LZ127")
+
+
+def test_exists_on_missing_product(storage):
+    assert not storage.exists("unknown")
+
+
 def test_decrement_stock(storage, create_product, redis_client):
     create_product(id=1, title="LZ 127", in_stock=10)
     create_product(id=2, title="LZ 129", in_stock=11)
